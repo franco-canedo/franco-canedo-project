@@ -10,8 +10,8 @@ class PlayersController < ApplicationController
     end 
 
     def create 
-        player = Player.create(username: params[:username], email: params[:email], wins: 0, losses: 0, leaderboard_id: Leaderboard.first)
-
+        leaderboard = Leaderboard.first
+        player = Player.create(username: params[:username], email: params[:email], wins: 0, losses: 0, leaderboard_id: leaderboard.id)
     end 
 
     def edit
@@ -31,7 +31,4 @@ class PlayersController < ApplicationController
         player.losses += 1
         player.save
     end 
-
-
-
 end

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   post 'players/:id', to: 'players#addWin'
   patch 'players/:id', to: 'players#addLoss'
+  post 'players', to: 'players#create'
 
   
 end
