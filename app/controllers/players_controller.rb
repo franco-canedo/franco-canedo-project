@@ -11,7 +11,7 @@ class PlayersController < ApplicationController
 
     def create 
         leaderboard = Leaderboard.first
-        player = Player.create(username: params[:username], email: params[:email], wins: 0, losses: 0, leaderboard_id: leaderboard.id)
+        player = Player.create(username: params[:username], email: params[:email], total_score: 0, highest_score: 0, leaderboard_id: leaderboard.id)
     end 
 
     def edit
