@@ -249,6 +249,18 @@ function hitX(ball, obj) {
   }
 }
 
+//loop thru game
+function play(timestamp) {
+    let deltaTime = timestamp - prevTime;
+    prevTime = timestamp;
+    ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    
+    game.update(deltaTime);
+    game.draw(ctx);
+  
+    requestAnimationFrame(play);
+  }
+
 // create game object
 let game = new Game(GAME_WIDTH, GAME_HEIGHT);
 
@@ -265,16 +277,6 @@ game.start();
 
 let prevTime = 0;
 
-//loop thru game
-function play(timestamp) {
-  let deltaTime = timestamp - prevTime;
-  prevTime = timestamp;
-  ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-  
-  game.update(deltaTime);
-  game.draw(ctx);
 
-  requestAnimationFrame(play);
-}
 
 requestAnimationFrame(play);
