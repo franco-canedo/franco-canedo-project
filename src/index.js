@@ -3,6 +3,21 @@ let ctx = canvas.getContext("2d");
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
+let SCORE = 0;
+let LIVES = 5;
+
+function create(element) {
+  return document.createElement(element);
+}
+
+function el(id) {
+  return document.getElementById(id);
+}
+
+
+
+/*           GAME          */
+
 
 class Ball {
   constructor(game) {
@@ -21,22 +36,19 @@ class Ball {
 
   draw(ctx) {
     ctx.beginPath();
-    ctx.arc(
-      this.position.x,
-      this.position.y,
-      this.radius,
-      0,
-      2 * Math.PI
-    );
+    ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
     ctx.stroke();
   }
 
   update(deltaTime) {
     this.position.x += this.speed.x;
     this.position.y += this.speed.y;
-    
+
     // walls
-    if (this.position.x + this.radius > this.gameWidth || this.position.x - this.radius < 0) {
+    if (
+      this.position.x + this.radius > this.gameWidth ||
+      this.position.x - this.radius < 0
+    ) {
       this.speed.x = -this.speed.x;
     }
 
@@ -47,8 +59,11 @@ class Ball {
 
     // floor
     if (this.position.y + this.radius > this.gameHeight) {
-      this.game.lives--;
-      this.reset();
+      // this.game.lives--;
+      if (LIVES > 0){
+        LIVES -= 1;
+        this.reset();
+      }
     }
 
     //paddle
@@ -58,7 +73,6 @@ class Ball {
     }
   }
 }
-
 
 class Brick {
   constructor(game, position) {
@@ -70,29 +84,25 @@ class Brick {
   }
 
   //ball collisions
-  update() { 
+  update() {
     if (hitX(this.game.ball, this)) {
       this.game.ball.speed.x = -this.game.ball.speed.x;
       this.gotHit = true;
+      SCORE += 1;
     } else if (hitY(this.game.ball, this)) {
       this.game.ball.speed.y = -this.game.ball.speed.y;
       this.gotHit = true;
+      SCORE += 1;
     }
   }
 
   draw(ctx) {
     ctx.beginPath();
-    ctx.fillStyle = 'black';
-    ctx.fillRect(
-      this.position.x,
-      this.position.y,
-      this.width,
-      this.height
-    );
+    ctx.fillStyle = "black";
+    ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     ctx.stroke();
   }
 }
-
 
 class Paddle {
   constructor(game) {
@@ -103,7 +113,7 @@ class Paddle {
     this.speed = 0;
     this.maxSpeed = 7;
     this.position = {
-      x: game.gameWidth / 2 - (this.width / 2),
+      x: game.gameWidth / 2 - this.width / 2,
       y: game.gameHeight - this.height - 10
     };
   }
@@ -145,6 +155,8 @@ class Game {
   start() {
     this.gameObjects = [this.ball, this.paddle];
     new InputHandler(this.paddle, this);
+    SCORE = 0;
+    LIVES = 5;
   }
 
   update(deltaTime) {
@@ -163,11 +175,11 @@ class InputHandler {
   constructor(paddle, game) {
     document.addEventListener("keydown", event => {
       switch (event.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           paddle.moveLeft();
           break;
 
-        case 'ArrowRight':
+        case "ArrowRight":
           paddle.moveRight();
           break;
 
@@ -183,11 +195,11 @@ class InputHandler {
 
     document.addEventListener("keyup", event => {
       switch (event.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           if (paddle.speed < 0) paddle.stop();
           break;
 
-        case 'ArrowRight':
+        case "ArrowRight":
           if (paddle.speed > 0) paddle.stop();
           break;
       }
@@ -235,37 +247,61 @@ function hitX(ball, obj) {
     ballTop <= objectBottom &&
     ballRight >= objectLeft + 1 &&
     ballLeft <= objectLeft - 1
-  ) {  
+  ) {
     return true;
-  } if ( // right side check
+  }
+  if (
+    // right side check
     ballBottom >= objectTop &&
     ballTop <= objectBottom &&
     ballRight >= objectRight + 1 &&
     ballLeft <= objectRight - 1
   ) {
-    return true; 
+    return true;
   } else {
     return false;
   }
 }
 
+//display score
+function drawInfo(){
+  const infoDiv = el('info');
+  const h2 = create('h2');
+  h2.id = 'score';
+  h2.innerText = `Score: ${SCORE}`;
+  const h3 = create('h3');
+  h3.id = 'lives';
+  h3.innerText = `Lives: ${LIVES}`;
+  infoDiv.appendChild(h2);
+  infoDiv.appendChild(h3);
+}
+
+function updateInfo(){
+  currentScore = el('score');
+  currentScore.innerText = `Score: ${SCORE}`;  
+  currentLives = el('lives');
+  currentLives.innerText = `Lives: ${LIVES}`;
+}
+
 //loop thru game
 function play(timestamp) {
-    let deltaTime = timestamp - prevTime;
-    prevTime = timestamp;
-    ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    
-    game.update(deltaTime);
-    game.draw(ctx);
-  
-    requestAnimationFrame(play);
-  }
+  let deltaTime = timestamp - prevTime;
+  prevTime = timestamp;
+  ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+  updateInfo();
+  game.update(deltaTime);
+  game.draw(ctx);
+
+  requestAnimationFrame(play);
+}
 
 // create game object
 let game = new Game(GAME_WIDTH, GAME_HEIGHT);
+let prevTime = 0;
 
 // create bricks in an array
-let bricks = [];  
+let bricks = [];
 for (let i = 0; i < 10; i++) {
   for (let j = 1; j < 6; j++) {
     bricks.push(new Brick(game, { x: i * 80 + 10, y: 40 * j }));
@@ -273,10 +309,7 @@ for (let i = 0; i < 10; i++) {
 }
 
 //create game objects and start game
+drawInfo();
 game.start();
-
-let prevTime = 0;
-
-
 
 requestAnimationFrame(play);
