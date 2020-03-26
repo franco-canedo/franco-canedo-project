@@ -95,5 +95,14 @@
 }
 
 .playerStats {
-    background: green;
+    background: rgb(166, 194, 166);
+    padding: 10px;
+    border-radius: 10%;
+}
+
+.userDiv {
+    background: rgb(166, 194, 166);
+    padding: 10px;
+    border-radius: 10%;
+    text-align: left;
 }

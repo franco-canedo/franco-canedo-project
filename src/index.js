@@ -92,7 +92,7 @@ function renderLogIn(event) {
         e.preventDefault();
         
         log_in(userInput.value);
-        fetchPlayers();
+        
     });
 }
 
@@ -103,7 +103,6 @@ function fetchPlayers() {
 }
 
 function LeaderBoardHTML(players) {
-    // console.log(players);
     const formDiv = el('form');
     formDiv.remove();
     const mainDIv = el('main');
@@ -123,8 +122,14 @@ function LeaderBoardHTML(players) {
         const li = create('li');
         li.dataset.playerId = id;
         li.innerText = username;
-        li.addEventListener("click", fetchPlayer);
-        li.addEventListener("mouseout", removePlayer);
+        const liButton = create('button');
+        liButton.innerText = "view";
+        liButton.dataset.playerId = id;
+        liButton.addEventListener("click", fetchPlayerIndividual);
+        li.appendChild(liButton);
+
+        // li.addEventListener("click", fetchPlayerIndividual);
+        // li.addEventListener("mouseout", removePlayer);
         ul.appendChild(li);
     }
     leaderboardDiv.appendChild(ul);
@@ -140,7 +145,6 @@ function LeaderBoardHTML(players) {
         // log_in(userInput.value);
         renderGame();
     });
-    console.log(play);
     mainDIv.appendChild(play);
 }
 
@@ -158,25 +162,26 @@ requestAnimationFrame(play);
 }
 
 function removePlayer(event) {
+    const hideButton = event.target;
     const leaderboard = el('leaderboard');
     let id = event.target.dataset.playerId;
     const div = document.querySelector(`div[data-id="${id}"]`);
     div.remove();
+    hideButton.remove();
     leaderboard.style.width = 100 + "px";
 }
 
-function fetchPlayer(event) {
+function fetchPlayerIndividual(event) {
     const id = event.target.dataset.playerId;
-
     fetch(`${PLAYERS_URL}/${id}`)
     .then(resp => resp.json())
     .then(json => showStats(json, id));
 }
 
 function showStats(player, id) {
-    console.log("click");
-    console.log(player);
-    console.log(id);
+    // console.log("click");
+    // console.log(player);
+    // console.log(id);
 
     const li = document.querySelector(`li[data-player-id="${id}"]`)
     const main = el('main');
@@ -191,6 +196,12 @@ function showStats(player, id) {
         <li>highest score: ${player.highest_score}</li>
         <li>total score: ${player.total_score}</li>
     </ul>`;
+
+    hideButton = create('button');
+    hideButton.innerText = "Hide";
+    hideButton.dataset.playerId = id;
+    hideButton.addEventListener("click", removePlayer);
+    li.appendChild(hideButton);
 
     leaderboard.style.width = 300 + "px";
     li.appendChild(div);
@@ -207,6 +218,7 @@ function el(id) {
 //=========================================
 
 function updateHighScore(id, score) {
+    console.log("updateScore");
     const body = {score: score};
 
     const configObj = {
@@ -298,7 +310,7 @@ function log_in(username) {
     .then(resp => resp.json())
     .then(json => {
 
-        console.log(json);
+        // console.log(json);
         if(json.status == 500) {
           renderLogIn();
         } else {
@@ -321,8 +333,11 @@ function renderUser(id) {
     .then(resp => resp.json())
     .then(json => {
         const userDiv = create('div');
+        userDiv.className = "userDiv";
+        
         const main = el('main');
         userDiv.innerHTML = `
+        <h2>Your Info:</h2>
         <ul>
         <li>username: ${json.username}</li>
         <li>email: ${json.email}</li>
@@ -331,8 +346,6 @@ function renderUser(id) {
         </ul>`;
 
         main.appendChild(userDiv);
-        
-
     });
 }
 
@@ -355,17 +368,20 @@ function getPlayer(player){
 }
 
 function drawPlayer(player){
-  console.log(player)
+  // console.log(player)
+  const main = el('main');
   const infoDiv = el('info');
   const h1 = create('h1');
   h1.id = 'player';
   h1.innerText = `Player: ${player.username}`;
   infoDiv.appendChild(h1);
+  main.appendChild(infoDiv);
   return h1;
 }
 
 function drawInfo(){
   const infoDiv = el('info');
+  infoDiv.innerHTML = "";
   const h2 = create('h2');
   h2.id = 'score';
   h2.innerText = `Score: ${SCORE}`;
@@ -643,6 +659,7 @@ function play(timestamp) {
   } else {
     updateTotalScore(PLAYER.id, SCORE);
     updateHighScore(PLAYER.id, SCORE);
+    renderUser(PLAYER.id);
   }
 }
 
