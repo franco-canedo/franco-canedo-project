@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   resources :players
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
-  post 'players/:id', to: 'players#addWin'
-  patch 'players/:id', to: 'players#addLoss'
+  patch 'players/:id/increase-score', to: 'players#increase_score'
+  patch 'players/:id/highscore', to: 'players#update_high_score'
   post 'players', to: 'players#create'
   patch 'players/:id/edit', to: 'players#edit'
 

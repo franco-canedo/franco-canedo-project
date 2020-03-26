@@ -20,15 +20,17 @@ class PlayersController < ApplicationController
         player.save
     end 
 
-    def addWin 
+    def increase_score
         player = Player.find_by(id: params[:id])
-        player.wins += 1
+        player.total_score += params[:score]
         player.save
     end 
 
-    def update
+    def update_high_score
         player = Player.find_by(id: params[:id])
-        player.losses += 1
-        player.save
+        if params[:score] > player.highest_score
+            player.highest_score = params[:score]
+            player.save
+        end 
     end 
 end
