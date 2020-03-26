@@ -1,3 +1,7 @@
+const  PLAYER_ID = '/1';
+const  PLAYERS_URL = "http://localhost:3000/players";
+const  LEADERBOARD_URL = "http://localhost:3000/leaderboards/1";
+
 let canvas = document.getElementById("gameScreen");
 let ctx = canvas.getContext("2d");
 
@@ -14,8 +18,45 @@ function el(id) {
   return document.getElementById(id);
 }
 
+function fetchPlayer(){
+  fetch(PLAYERS_URL + PLAYER_ID)
+  .then(resp => resp.json())
+  .then(json => drawPlayer(json))
+}
 
+function getPlayer(player){
+  return player;
+}
 
+function drawPlayer(player){
+  console.log(player)
+  const infoDiv = el('info');
+  const h1 = create('h1');
+  h1.id = 'player';
+  h1.innerText = `Player: ${player.username}`;
+  infoDiv.appendChild(h1);
+  return h1;
+}
+
+function drawInfo(){
+  const infoDiv = el('info');
+  const h2 = create('h2');
+  h2.id = 'score';
+  h2.innerText = `Score: ${SCORE}`;
+  const h3 = create('h3');
+  h3.id = 'lives';
+  h3.innerText = `Lives: ${LIVES}`;
+  infoDiv.appendChild(h2);
+  infoDiv.appendChild(h3);
+  fetchPlayer();
+}
+
+function updateInfo(){
+  currentScore = el('score');
+  currentScore.innerText = `Score: ${SCORE}`;  
+  currentLives = el('lives');
+  currentLives.innerText = `Lives: ${LIVES}`;
+}
 /*           GAME          */
 
 
@@ -261,26 +302,6 @@ function hitX(ball, obj) {
   } else {
     return false;
   }
-}
-
-//display score
-function drawInfo(){
-  const infoDiv = el('info');
-  const h2 = create('h2');
-  h2.id = 'score';
-  h2.innerText = `Score: ${SCORE}`;
-  const h3 = create('h3');
-  h3.id = 'lives';
-  h3.innerText = `Lives: ${LIVES}`;
-  infoDiv.appendChild(h2);
-  infoDiv.appendChild(h3);
-}
-
-function updateInfo(){
-  currentScore = el('score');
-  currentScore.innerText = `Score: ${SCORE}`;  
-  currentLives = el('lives');
-  currentLives.innerText = `Lives: ${LIVES}`;
 }
 
 //loop thru game
