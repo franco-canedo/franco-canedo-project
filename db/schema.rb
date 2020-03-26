@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_24_210725) do
+ActiveRecord::Schema.define(version: 2020_03_24_211827) do
 
   create_table "friends", force: :cascade do |t|
     t.integer "user_id"
@@ -29,11 +29,11 @@ ActiveRecord::Schema.define(version: 2020_03_24_210725) do
   create_table "players", force: :cascade do |t|
     t.string "username"
     t.string "email"
-    t.integer "total_score"
-    t.integer "highest_score"
-    t.integer "leaderboard_id"
+    t.integer "wins"
+    t.integer "losses"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "leaderboard_id"
   end
 
 end

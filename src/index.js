@@ -2,7 +2,10 @@ const  PLAYER_ID = '/1';
 const  PLAYERS_URL = "http://localhost:3000/players";
 const  LEADERBOARD_URL = "http://localhost:3000/leaderboards/1";
 
-let canvas = document.getElementById("gameScreen");
+// let canvas = document.getElementById("gameScreen");
+// let ctx = canvas.getContext("2d");
+
+let canvas = create('canvas');
 let ctx = canvas.getContext("2d");
 
 const GAME_WIDTH = 800;
@@ -118,7 +121,32 @@ function LeaderBoardHTML(players) {
         ul.appendChild(li);
     }
     leaderboardDiv.appendChild(ul);
+
+    const play = create('button');
+    play.innerText = 'Play';
+    
+    play.addEventListener("click", (e) => {
+        e.preventDefault();
+        console.log(e.target)
+        // log_in(userInput.value);
+        renderGame();
+    });
+    console.log(play);
+    mainDIv.appendChild(play);
     mainDIv.appendChild(leaderboardDiv);
+}
+
+function renderGame(){
+    // const canvas = create('canvas');
+    canvas.setAttribute('id', 'gameScreen');
+    canvas.setAttribute('height', GAME_HEIGHT);
+    canvas.setAttribute('width', GAME_WIDTH);
+    main = el('main');
+    main.appendChild(canvas);
+    drawInfo();
+    game.start();
+    
+requestAnimationFrame(play);
 }
 
 function removePlayer(event) {
@@ -381,6 +409,12 @@ class Ball {
       if (LIVES > 0){
         LIVES -= 1;
         this.reset();
+      } else if (lives == 6){
+
+      }      else {
+        updateTotalScore(PLAYER_ID, SCORE);
+        updateHighScore(PLAYER_ID, SCORE);
+        LIVES = 6;
       }
     }
 
@@ -607,7 +641,7 @@ for (let i = 0; i < 10; i++) {
 }
 
 //create game objects and start game
-drawInfo();
-game.start();
+// drawInfo();
+// game.start();
 
-requestAnimationFrame(play);
+// requestAnimationFrame(play);
