@@ -1,4 +1,5 @@
 const  PLAYERS_URL = "http://localhost:3000/players";
+const logIn = el('log_in');
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM Loaded");
@@ -13,7 +14,7 @@ function renderCreateAccount() {
     h1.innerText = "Create Account";
     formDiv.appendChild(h1);
 
-    const logIn = el('log_in');
+    // BUG
     logIn.innerText = "Log In";
     logIn.addEventListener("click", renderLogIn);
 
@@ -27,8 +28,15 @@ function renderCreateAccount() {
     `;
     formDiv.appendChild(form);
 
+    const userInput = el('username')
+    const emailInput = el('email');
+    
     const submit = el('create-account-button');
-    submit.addEventListener("click", renderLogIn);
+    submit.addEventListener("click", (e) => {
+        e.preventDefault();
+        createUser(userInput.value, emailInput.value);
+        renderLogIn(e);
+    });
 };
 
 function renderLogIn(event) {
@@ -40,7 +48,7 @@ function renderLogIn(event) {
     h1.innerText = "Log In";
     formDiv.appendChild(h1);
 
-    const logIn = el('log_in');
+    
     logIn.innerText = "Create Account";
     logIn.addEventListener("click", renderCreateAccount);
 
@@ -53,12 +61,21 @@ function renderLogIn(event) {
     <input type="submit" id="log-in-button">
     `;
     formDiv.appendChild(form);
+
+    const userInput = el('username');
+    const emailInput = el('email');
+
     const submit = el('log-in-button');
-    submit.addEventListener("click", fetchPlayers);
+    
+    submit.addEventListener("click", (e) => {
+        e.preventDefault();
+        console.log(e.target)
+        // log_in(userInput.value);
+        fetchPlayers();
+    });
 }
 
-function fetchPlayers(event) {
-    event.preventDefault();
+function fetchPlayers() {
     fetch(PLAYERS_URL)
     .then(resp => resp.json())
     .then(json => LeaderBoardHTML(json));
@@ -71,14 +88,16 @@ function LeaderBoardHTML(players) {
     const mainDIv = el('main');
     const leaderboardDiv = create('div');
     leaderboardDiv.id = "leaderboard";
+
+    const h2 = create('h2');
+    h2.innerText = "Leaderboard:"
+    leaderboardDiv.appendChild(h2);
     
     const ul = create('ul');
 
     for(const player in players) {
         const username = players[player].username;
         const id = players[player].id;
-        const wins  = players[player].wins;
-        const losses  = players[player].losses;
 
         const li = create('li');
         li.dataset.playerId = id;
@@ -109,8 +128,8 @@ function fetchPlayer(event) {
 
 function showStats(player, id) {
     console.log("mouseover");
-    // console.log(player);
-    // console.log(id);
+    console.log(player);
+    console.log(id);
 
     const li = document.querySelector(`li[data-player-id="${id}"]`)
     const main = el('main');
@@ -122,8 +141,8 @@ function showStats(player, id) {
     div.innerHTML = `<ul>
         <li>username: ${player.username}</li>
         <li>email: ${player.email}</li>
-        <li>Wins: ${player.wins}</li>
-        <li>Losses: ${player.losses}</li>
+        <li>highest score: ${player.highest_score}</li>
+        <li>total score: ${player.total_score}</li>
     </ul>`;
 
     leaderboard.style.width = 300 + "px";
@@ -137,3 +156,123 @@ function create(element) {
 function el(id) {
     return document.getElementById(id);
 }
+
+//=========================================
+
+function updateHighScore(id, score) {
+    const body = {score: score};
+
+    const configObj = {
+        method: "PATCH",
+        headers: {
+            "Content-Type":"application/json",
+            "Accept":"application/json"
+        },
+        body: JSON.stringify(body)
+    }
+    fetch(`http://localhost:3000/players/${id}/highscore`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
+}
+
+//updateHighScore(1, 300);
+
+function updateTotalScore(id, score) {
+    const body = {score: score};
+
+    const configObj = {
+        method: "PATCH",
+        headers: {
+            "Content-Type":"application/json",
+            "Accept":"application/json"
+        },
+        body: JSON.stringify(body)
+    }
+    fetch(`http://localhost:3000/players/${id}/increase-score`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
+}
+
+// updateTotalScore(1, 100);
+
+function createUser(username, email) {
+    const body = {
+        username: username,
+        email: email
+    }
+    
+
+    const configObj = {
+        method: "POST",
+        headers: {
+            "Content-Type":"application/json",
+            "Accept":"application/json"
+        },
+        body: JSON.stringify(body)
+    }
+
+    console.log(configObj);
+
+    fetch(`http://localhost:3000/players`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
+}
+
+function editUsername(id, username) {
+    const body = {username: username};
+
+    const configObj = {
+        method: "PATCH",
+        headers: {
+            "Content-Type":"application/json",
+            "Accept":"application/json"
+        },
+        body: JSON.stringify(body)
+    }
+    fetch(`http://localhost:3000/players/${id}/edit`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
+
+}
+
+function log_in(username) {
+    const body = {username: username};
+
+    const configObj = {
+        method: "POST",
+        headers: {
+            "Content-Type":"application/json",
+            "Accept":"application/json"
+        },
+        body: JSON.stringify(body)
+    }
+
+    fetch(`http://localhost:3000/players/log_in`, configObj)
+    .then(resp => resp.json())
+    .then(json => {
+        console.log(json);
+        fetchPlayers();
+        renderUser(1);
+    });
+};
+
+function renderUser(id) {
+    fetch(`http://localhost:3000/players/${id}`)
+    .then(resp => resp.json())
+    .then(json => {
+        const userDiv = create('div');
+        const main = el('main');
+        userDiv.innerHTML = `
+        <ul>
+        <li>username: ${json.username}</li>
+        <li>email: ${json.email}</li>
+        <li>highest score: ${json.highest_score}</li>
+        <li>total score: ${json.total_score}</li>
+        </ul>`;
+
+        main.appendChild(userDiv);
+        
+
+    });
+}
+
