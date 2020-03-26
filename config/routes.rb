@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   patch 'players/:id/highscore', to: 'players#update_high_score'
   post 'players', to: 'players#create'
   patch 'players/:id/edit', to: 'players#edit'
+  post 'players/log_in', to: 'players#log_in'
 
   
 end

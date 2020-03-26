@@ -1,4 +1,11 @@
-const  PLAYER_ID = '/1';
+let PLAYER = {
+  id: 0,
+  username: "",
+  highest_score: 0,
+  total_score: 0
+}
+
+
 const  PLAYERS_URL = "http://localhost:3000/players";
 const  LEADERBOARD_URL = "http://localhost:3000/leaderboards/1";
 
@@ -54,7 +61,7 @@ function renderCreateAccount() {
 };
 
 function renderLogIn(event) {
-    console.log(event.target);
+    
 
     const formDiv = el('form');
     formDiv.innerHTML = "";
@@ -83,8 +90,8 @@ function renderLogIn(event) {
     
     submit.addEventListener("click", (e) => {
         e.preventDefault();
-        console.log(e.target)
-        // log_in(userInput.value);
+        
+        log_in(userInput.value);
         fetchPlayers();
     });
 }
@@ -96,7 +103,7 @@ function fetchPlayers() {
 }
 
 function LeaderBoardHTML(players) {
-    console.log(players);
+    // console.log(players);
     const formDiv = el('form');
     formDiv.remove();
     const mainDIv = el('main');
@@ -122,6 +129,8 @@ function LeaderBoardHTML(players) {
     }
     leaderboardDiv.appendChild(ul);
 
+    
+    mainDIv.appendChild(leaderboardDiv);
     const play = create('button');
     play.innerText = 'Play';
     
@@ -133,7 +142,6 @@ function LeaderBoardHTML(players) {
     });
     console.log(play);
     mainDIv.appendChild(play);
-    mainDIv.appendChild(leaderboardDiv);
 }
 
 function renderGame(){
@@ -166,7 +174,7 @@ function fetchPlayer(event) {
 }
 
 function showStats(player, id) {
-    console.log("mouseover");
+    console.log("click");
     console.log(player);
     console.log(id);
 
@@ -289,9 +297,22 @@ function log_in(username) {
     fetch(`http://localhost:3000/players/log_in`, configObj)
     .then(resp => resp.json())
     .then(json => {
+
         console.log(json);
-        fetchPlayers();
-        renderUser(1);
+        if(json.status == 500) {
+          renderLogIn();
+        } else {
+          PLAYER = {
+            id: json.id,
+            username: json.username,
+            highest_score: json.highest_score,
+            total_score: json.total_score
+          }
+          fetchPlayers();
+          console.log(PLAYER);
+          renderUser(PLAYER.id);
+        }
+
     });
 };
 
@@ -324,7 +345,7 @@ function el(id) {
 }
 
 function fetchPlayer(){
-  fetch(PLAYERS_URL + PLAYER_ID)
+  fetch(`${PLAYERS_URL}/${PLAYER.id}`)
   .then(resp => resp.json())
   .then(json => drawPlayer(json))
 }
@@ -409,13 +430,7 @@ class Ball {
       if (LIVES > 0){
         LIVES -= 1;
         this.reset();
-      } else if (lives == 6){
-
-      }      else {
-        updateTotalScore(PLAYER_ID, SCORE);
-        updateHighScore(PLAYER_ID, SCORE);
-        LIVES = 6;
-      }
+      } 
     }
 
     //paddle
@@ -508,7 +523,7 @@ class Game {
     this.gameObjects = [this.ball, this.paddle];
     new InputHandler(this.paddle, this);
     SCORE = 0;
-    LIVES = 5;
+    LIVES = 2;
   }
 
   update(deltaTime) {
@@ -620,12 +635,15 @@ function play(timestamp) {
   let deltaTime = timestamp - prevTime;
   prevTime = timestamp;
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-  updateInfo();
-  game.update(deltaTime);
-  game.draw(ctx);
-
-  requestAnimationFrame(play);
+  if(LIVES >= 0) {
+    updateInfo();
+    game.update(deltaTime);
+    game.draw(ctx);
+    requestAnimationFrame(play);
+  } else {
+    updateTotalScore(PLAYER.id, SCORE);
+    updateHighScore(PLAYER.id, SCORE);
+  }
 }
 
 // create game object
