@@ -35,6 +35,7 @@ function resetPlayer(){
     highest_score: 0,
     total_score: 0
   }
+  renderLogIn('click');
 }
 
 function renderCreateAccount() {
