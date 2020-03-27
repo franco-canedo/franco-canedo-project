@@ -31,12 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
 function resetPlayer(){
   console.log('RESET');
   PLAYER = {
-    id: 0,
+    id: undefined,
     username: "",
     highest_score: 0,
     total_score: 0
   }
-  renderCreateAccount();
+  renderLogIn();
 }
 
 function renderCreateAccount() {
@@ -330,7 +330,7 @@ function log_in(username) {
     .then(json => {
 
         console.log(json);
-        if(json.id == undefined) {
+        if(json.id == undefined || json.id == 0) {
           console.log('undef');
           renderLogIn();
         } else {
