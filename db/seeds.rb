@@ -12,8 +12,8 @@ Friend.destroy_all
 
 leaderboard = Leaderboard.create(name: "Leaderboard")
 
-franco = Player.create(username: "franco", email: "franco@gmail.com", total_score: 1000, highest_score: 0, leaderboard_id: leaderboard.id)
-ben = Player.create(username: "ben", email: "ben@gmail.com", total_score: 700, highest_score: 200, leaderboard_id: leaderboard.id)
+franco = Player.create(username: "franco", email: "franco@gmail.com", total_score: 10, highest_score: 8, leaderboard_id: leaderboard.id)
+ben = Player.create(username: "ben", email: "ben@gmail.com", total_score: 340, highest_score: 12, leaderboard_id: leaderboard.id)
 dane = Player.create(username: "dane", email: "dane@gmail.com", total_score: 900, highest_score: 40, leaderboard_id: leaderboard.id)
 
 
