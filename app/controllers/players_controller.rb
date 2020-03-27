@@ -1,7 +1,9 @@
 class PlayersController < ApplicationController
     def index
-        players = Player.all 
-        render json: players, except: [:created_at, :updated_at]
+        # players = Player.all 
+        # sorted = players.sort_by {|player| player.highest_score}
+        lb = Leaderboard.all.first.players.sort_by { |player| player.highest_score }
+        render json: lb.reverse, except: [:created_at, :updated_at]
     end 
 
     def show
