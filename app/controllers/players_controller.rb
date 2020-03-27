@@ -20,6 +20,17 @@ class PlayersController < ApplicationController
         player.save
     end 
 
+    def log_in
+        player = Player.find_by(username: params[:username])
+        # byebug
+        # binding.pry
+        if player 
+            render json: player
+        else 
+            render json: {message: "error"}
+        end 
+    end 
+
     def increase_score
         player = Player.find_by(id: params[:id])
         player.total_score += params[:score]
