@@ -141,7 +141,7 @@ function LeaderBoardHTML(players) {
     
     play.addEventListener("click", (e) => {
         e.preventDefault();
-        console.log(e.target)
+        // console.log(e.target)
         // log_in(userInput.value);
         renderGame();
     });
@@ -218,7 +218,7 @@ function el(id) {
 //=========================================
 
 function updateHighScore(id, score) {
-    console.log("updateScore");
+    console.log("updateHigh Score");
     const body = {score: score};
 
     const configObj = {
@@ -237,6 +237,7 @@ function updateHighScore(id, score) {
 //updateHighScore(1, 300);
 
 function updateTotalScore(id, score) {
+    console.log("update total score");
     const body = {score: score};
 
     const configObj = {
@@ -329,25 +330,37 @@ function log_in(username) {
 };
 
 function renderUser(id) {
+    console.log("render user info");
     fetch(`http://localhost:3000/players/${id}`)
     .then(resp => resp.json())
     .then(json => {
-        const userDiv = create('div');
-        userDiv.className = "userDiv";
-        
-        const main = el('main');
-        userDiv.innerHTML = `
-        <h2>Your Info:</h2>
-        <ul>
-        <li>username: ${json.username}</li>
-        <li>email: ${json.email}</li>
-        <li>highest score: ${json.highest_score}</li>
-        <li>total score: ${json.total_score}</li>
-        </ul>`;
+        const div = document.querySelector('div[class="userDiv"]');
 
-        main.appendChild(userDiv);
-    });
-}
+        if(!div) {
+          const userDiv = create('div');
+          userDiv.className = "userDiv";
+          
+          const main = el('main');
+          userDiv.innerHTML = `
+          <h2>Your Info:</h2>
+          <ul>
+          <li>username: ${json.username}</li>
+          <li>email: ${json.email}</li>
+          <li id="highScore">highest score: ${json.highest_score}</li>
+          <li id="totalScore">total score: ${json.total_score}</li>
+          </ul>`;
+
+          main.appendChild(userDiv);
+        } else {
+          let highScoreLi = el('highScore');
+          console.log(highScoreLi);
+          let totalScoreLi = el('totalScore');
+          
+          highScoreLi.innerText = `highest score: ${json.highest_score}`;
+          totalScoreLi.innerText = `total score: ${json.total_score}`;
+        }
+    })
+};
 
 function create(element) {
   return document.createElement(element);
@@ -651,15 +664,19 @@ function play(timestamp) {
   let deltaTime = timestamp - prevTime;
   prevTime = timestamp;
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-  if(LIVES >= 0) {
+  if(LIVES > 0) {
     updateInfo();
     game.update(deltaTime);
     game.draw(ctx);
     requestAnimationFrame(play);
   } else {
     updateTotalScore(PLAYER.id, SCORE);
-    updateHighScore(PLAYER.id, SCORE);
-    renderUser(PLAYER.id);
+    setTimeout(() => {
+      updateHighScore(PLAYER.id, SCORE);
+      renderUser(PLAYER.id);
+    }, 1000);
+    // updateHighScore(PLAYER.id, SCORE);
+    // renderUser(PLAYER.id);
   }
 }
 
