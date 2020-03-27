@@ -3,16 +3,15 @@ let PLAYER = {
   username: "",
   highest_score: 0,
   total_score: 0
-}
+};
 
-
-const  PLAYERS_URL = "http://localhost:3000/players";
-const  LEADERBOARD_URL = "http://localhost:3000/leaderboards/1";
+const PLAYERS_URL = "http://localhost:3000/players";
+const LEADERBOARD_URL = "http://localhost:3000/leaderboards/1";
 
 // let canvas = document.getElementById("gameScreen");
 // let ctx = canvas.getContext("2d");
 
-let canvas = create('canvas');
+let canvas = create("canvas");
 let ctx = canvas.getContext("2d");
 
 const GAME_WIDTH = 800;
@@ -20,358 +19,187 @@ const GAME_HEIGHT = 600;
 let SCORE = 0;
 let LIVES = 5;
 
-const logIn = el('log_in');
+const logIn = el("log_in");
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM Loaded");
-    // fetchPlayers(PLAYERS_URL);
-    renderCreateAccount();
+  console.log("DOM Loaded");
+  // fetchPlayers(PLAYERS_URL);
+  renderCreateAccount();
 });
 
-function resetPlayer(){
-  PLAYER = {
-    id: 0,
-    username: "",
-    highest_score: 0,
-    total_score: 0
-  }
-  renderLogIn('click');
-}
-
 function renderCreateAccount() {
-    const formDiv = el('form');
-    formDiv.innerHTML = "";
-    const h1 = create('h1');
-    h1.innerText = "Create Account";
-    formDiv.appendChild(h1);
+  const formDiv = el("form");
+  formDiv.innerHTML = "";
+  const h1 = create("h1");
+  h1.innerText = "Create Account";
+  formDiv.appendChild(h1);
 
-    // BUG
-    logIn.innerText = "Log In";
-    logIn.addEventListener("click", renderLogIn);
+  // BUG
+  logIn.innerText = "Log In";
+  logIn.addEventListener("click", renderLogIn);
 
-    const form = create('form');
-    form.innerHTML = `
+  const form = create("form");
+  form.innerHTML = `
     <label for="username">Username:</label><br>
     <input type="text" id="username" name="username"><br>
     <label for="email">Email:</label><br>
     <input type="text" id="email" name="email">
     <input type="submit" id="create-account-button">
     `;
-    formDiv.appendChild(form);
+  formDiv.appendChild(form);
 
-    const userInput = el('username')
-    const emailInput = el('email');
-    
-    const submit = el('create-account-button');
-    submit.addEventListener("click", (e) => {
-        e.preventDefault();
-        createUser(userInput.value, emailInput.value);
-        renderLogIn(e);
-    });
-};
+  const userInput = el("username");
+  const emailInput = el("email");
+
+  const submit = el("create-account-button");
+  submit.addEventListener("click", e => {
+    e.preventDefault();
+    createUser(userInput.value, emailInput.value);
+    renderLogIn(e);
+  });
+}
 
 function renderLogIn(event) {
-    
+  const formDiv = el("form");
+  formDiv.innerHTML = "";
+  const h1 = create("h1");
+  h1.innerText = "Log In";
+  formDiv.appendChild(h1);
 
-    const formDiv = el('form');
-    formDiv.innerHTML = "";
-    const h1 = create('h1');
-    h1.innerText = "Log In";
-    formDiv.appendChild(h1);
+  logIn.innerText = "Create Account";
+  logIn.addEventListener("click", renderCreateAccount);
 
-    
-    logIn.innerText = "Create Account";
-    logIn.addEventListener("click", renderCreateAccount);
-
-    const form = create('form');
-    form.innerHTML = `
+  const form = create("form");
+  form.innerHTML = `
     <label for="username">Username:</label><br>
     <input type="text" id="username" name="username"><br>
     <label for="email">Email:</label><br>
     <input type="text" id="email" name="email">
     <input type="submit" id="log-in-button">
     `;
-    formDiv.appendChild(form);
+  formDiv.appendChild(form);
 
-    const userInput = el('username');
-    const emailInput = el('email');
+  const userInput = el("username");
+  const emailInput = el("email");
 
-    const submit = el('log-in-button');
-    
-    submit.addEventListener("click", (e) => {
-        e.preventDefault();
-        
-        log_in(userInput.value);
-        
-    });
+  const submit = el("log-in-button");
+
+  submit.addEventListener("click", e => {
+    e.preventDefault();
+
+    log_in(userInput.value);
+  });
 }
 
 function fetchPlayers() {
-    fetch(PLAYERS_URL)
+  fetch(PLAYERS_URL)
     .then(resp => resp.json())
     .then(json => LeaderBoardHTML(json));
 }
 
 function LeaderBoardHTML(players) {
-    const formDiv = el('form');
-    formDiv.remove();
-    const mainDIv = el('main');
-    const leaderboardDiv = create('div');
-    leaderboardDiv.id = "leaderboard";
+  const formDiv = el("form");
+  formDiv.remove();
+  const mainDIv = el("main");
+  const leaderboardDiv = create("div");
+  leaderboardDiv.id = "leaderboard";
 
-    const h2 = create('h2');
-    h2.innerText = "Leaderboard:"
-    leaderboardDiv.appendChild(h2);
-    
-    const ul = create('ul');
+  const h2 = create("h2");
+  h2.innerText = "Leaderboard:";
+  leaderboardDiv.appendChild(h2);
 
-    for(const player in players) {
-        const username = players[player].username;
-        const id = players[player].id;
+  const ul = create("ul");
 
-        const li = create('li');
-        li.dataset.playerId = id;
-        li.innerText = username;
-        const liButton = create('button');
-        liButton.innerText = "view";
-        liButton.dataset.playerId = id;
-        liButton.addEventListener("click", fetchPlayerIndividual);
-        li.appendChild(liButton);
+  for (const player in players) {
+    const username = players[player].username;
+    const id = players[player].id;
 
-        // li.addEventListener("click", fetchPlayerIndividual);
-        // li.addEventListener("mouseout", removePlayer);
-        ul.appendChild(li);
-    }
-    leaderboardDiv.appendChild(ul);
+    const li = create("li");
+    li.dataset.playerId = id;
+    li.innerText = username;
+    const liButton = create("button");
+    liButton.innerText = "view";
+    liButton.dataset.playerId = id;
+    liButton.addEventListener("click", fetchPlayerIndividual);
+    li.appendChild(liButton);
 
-    
-    mainDIv.appendChild(leaderboardDiv);
-    const play = create('button');
-    play.innerText = 'Play';
-    
-    play.addEventListener("click", (e) => {
-        e.preventDefault();
-        // console.log(e.target)
-        // log_in(userInput.value);
-        renderGame();
-    });
-    mainDIv.appendChild(play);
+    // li.addEventListener("click", fetchPlayerIndividual);
+    // li.addEventListener("mouseout", removePlayer);
+    ul.appendChild(li);
+  }
+  leaderboardDiv.appendChild(ul);
+
+  mainDIv.appendChild(leaderboardDiv);
+  const play = create("button");
+  play.innerText = "Play";
+
+  play.addEventListener("click", e => {
+    e.preventDefault();
+    // console.log(e.target)
+    // log_in(userInput.value);
+    renderGame();
+  });
+  mainDIv.appendChild(play);
 }
 
-function renderGame(){
-    // const canvas = create('canvas');
-    canvas.setAttribute('id', 'gameScreen');
-    canvas.setAttribute('height', GAME_HEIGHT);
-    canvas.setAttribute('width', GAME_WIDTH);
-    main = el('main');
-    main.appendChild(canvas);
-    drawInfo();
-    game.start();
-    
-requestAnimationFrame(play);
+function renderGame() {
+  // const canvas = create('canvas');
+  canvas.setAttribute("id", "gameScreen");
+  canvas.setAttribute("height", GAME_HEIGHT);
+  canvas.setAttribute("width", GAME_WIDTH);
+  main = el("main");
+  main.appendChild(canvas);
+  drawInfo();
+  game.start();
+
+  requestAnimationFrame(play);
 }
 
 function removePlayer(event) {
-    const hideButton = event.target;
-    const leaderboard = el('leaderboard');
-    let id = event.target.dataset.playerId;
-    const div = document.querySelector(`div[data-id="${id}"]`);
-    div.remove();
-    hideButton.remove();
-    leaderboard.style.width = 100 + "px";
+  const hideButton = event.target;
+  const leaderboard = el("leaderboard");
+  let id = event.target.dataset.playerId;
+  const div = document.querySelector(`div[data-id="${id}"]`);
+  div.remove();
+  hideButton.remove();
+  leaderboard.style.width = 100 + "px";
 }
 
 function fetchPlayerIndividual(event) {
-    const id = event.target.dataset.playerId;
-    fetch(`${PLAYERS_URL}/${id}`)
+  const id = event.target.dataset.playerId;
+  fetch(`${PLAYERS_URL}/${id}`)
     .then(resp => resp.json())
     .then(json => showStats(json, id));
 }
 
 function showStats(player, id) {
-    // console.log("click");
-    // console.log(player);
-    // console.log(id);
+  // console.log("click");
+  // console.log(player);
+  // console.log(id);
 
-    const li = document.querySelector(`li[data-player-id="${id}"]`)
-    const main = el('main');
-    const leaderboard = el('leaderboard');
-    // main.innerHTML = "";
-    const div = create('div');
-    div.dataset.id = id;
-    div.className = "playerStats";
-    div.innerHTML = `<ul>
+  const li = document.querySelector(`li[data-player-id="${id}"]`);
+  const main = el("main");
+  const leaderboard = el("leaderboard");
+  // main.innerHTML = "";
+  const div = create("div");
+  div.dataset.id = id;
+  div.className = "playerStats";
+  div.innerHTML = `<ul>
         <li>username: ${player.username}</li>
         <li>email: ${player.email}</li>
         <li>highest score: ${player.highest_score}</li>
         <li>total score: ${player.total_score}</li>
     </ul>`;
 
-    hideButton = create('button');
-    hideButton.innerText = "Hide";
-    hideButton.dataset.playerId = id;
-    hideButton.addEventListener("click", removePlayer);
-    li.appendChild(hideButton);
+  hideButton = create("button");
+  hideButton.innerText = "Hide";
+  hideButton.dataset.playerId = id;
+  hideButton.addEventListener("click", removePlayer);
+  li.appendChild(hideButton);
 
-    leaderboard.style.width = 300 + "px";
-    li.appendChild(div);
-};
-
-function create(element) {
-    return document.createElement(element);
+  leaderboard.style.width = 300 + "px";
+  li.appendChild(div);
 }
-
-function el(id) {
-    return document.getElementById(id);
-}
-
-//=========================================
-
-function updateHighScore(id, score) {
-    console.log("updateHigh Score");
-    const body = {score: score};
-
-    const configObj = {
-        method: "PATCH",
-        headers: {
-            "Content-Type":"application/json",
-            "Accept":"application/json"
-        },
-        body: JSON.stringify(body)
-    }
-    fetch(`http://localhost:3000/players/${id}/highscore`, configObj)
-    .then(resp => resp.json())
-    .then(json => console.log(json));
-}
-
-//updateHighScore(1, 300);
-
-function updateTotalScore(id, score) {
-    console.log("update total score");
-    const body = {score: score};
-
-    const configObj = {
-        method: "PATCH",
-        headers: {
-            "Content-Type":"application/json",
-            "Accept":"application/json"
-        },
-        body: JSON.stringify(body)
-    }
-    fetch(`http://localhost:3000/players/${id}/increase-score`, configObj)
-    .then(resp => resp.json())
-    .then(json => console.log(json));
-}
-
-// updateTotalScore(1, 100);
-
-function createUser(username, email) {
-    const body = {
-        username: username,
-        email: email
-    }
-    
-
-    const configObj = {
-        method: "POST",
-        headers: {
-            "Content-Type":"application/json",
-            "Accept":"application/json"
-        },
-        body: JSON.stringify(body)
-    }
-
-    console.log(configObj);
-
-    fetch(`http://localhost:3000/players`, configObj)
-    .then(resp => resp.json())
-    .then(json => console.log(json));
-}
-
-function editUsername(id, username) {
-    const body = {username: username};
-
-    const configObj = {
-        method: "PATCH",
-        headers: {
-            "Content-Type":"application/json",
-            "Accept":"application/json"
-        },
-        body: JSON.stringify(body)
-    }
-    fetch(`http://localhost:3000/players/${id}/edit`, configObj)
-    .then(resp => resp.json())
-    .then(json => console.log(json));
-
-}
-
-function log_in(username) {
-    const body = {username: username};
-
-    const configObj = {
-        method: "POST",
-        headers: {
-            "Content-Type":"application/json",
-            "Accept":"application/json"
-        },
-        body: JSON.stringify(body)
-    }
-
-    fetch(`http://localhost:3000/players/log_in`, configObj)
-    .then(resp => resp.json())
-    .then(json => {
-
-        console.log(json);
-        if(json.id == undefined) {
-          console.log('undef');
-          renderLogIn();
-        } else {
-          PLAYER = {
-            id: json.id,
-            username: json.username,
-            highest_score: json.highest_score,
-            total_score: json.total_score
-          }
-          fetchPlayers();
-          console.log(PLAYER);
-          renderUser(PLAYER.id);
-        }
-
-    });
-};
-
-function renderUser(id) {
-    console.log("render user info");
-    fetch(`http://localhost:3000/players/${id}`)
-    .then(resp => resp.json())
-    .then(json => {
-        const div = document.querySelector('div[class="userDiv"]');
-
-        if(!div) {
-          const userDiv = create('div');
-          userDiv.className = "userDiv";
-          
-          const main = el('main');
-          userDiv.innerHTML = `
-          <h2>Your Info:</h2>
-          <ul>
-          <li>username: ${json.username}</li>
-          <li>email: ${json.email}</li>
-          <li id="highScore">highest score: ${json.highest_score}</li>
-          <li id="totalScore">total score: ${json.total_score}</li>
-          </ul>`;
-
-          main.appendChild(userDiv);
-        } else {
-          let highScoreLi = el('highScore');
-          console.log(highScoreLi);
-          let totalScoreLi = el('totalScore');
-          
-          highScoreLi.innerText = `highest score: ${json.highest_score}`;
-          totalScoreLi.innerText = `total score: ${json.total_score}`;
-        }
-    })
-};
 
 function create(element) {
   return document.createElement(element);
@@ -381,50 +209,201 @@ function el(id) {
   return document.getElementById(id);
 }
 
-function fetchPlayer(){
-  fetch(`${PLAYERS_URL}/${PLAYER.id}`)
-  .then(resp => resp.json())
-  .then(json => drawPlayer(json))
+//=========================================
+
+function updateHighScore(id, score) {
+  console.log("updateHigh Score");
+  const body = { score: score };
+
+  const configObj = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(body)
+  };
+  fetch(`http://localhost:3000/players/${id}/highscore`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
 }
 
-function getPlayer(player){
+//updateHighScore(1, 300);
+
+function updateTotalScore(id, score) {
+  console.log("update total score");
+  const body = { score: score };
+
+  const configObj = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(body)
+  };
+  fetch(`http://localhost:3000/players/${id}/increase-score`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
+}
+
+// updateTotalScore(1, 100);
+
+function createUser(username, email) {
+  const body = {
+    username: username,
+    email: email
+  };
+
+  const configObj = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(body)
+  };
+
+  console.log(configObj);
+
+  fetch(`http://localhost:3000/players`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
+}
+
+function editUsername(id, username) {
+  const body = { username: username };
+
+  const configObj = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(body)
+  };
+  fetch(`http://localhost:3000/players/${id}/edit`, configObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json));
+}
+
+function log_in(username) {
+  const body = { username: username };
+
+  const configObj = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(body)
+  };
+
+  fetch(`http://localhost:3000/players/log_in`, configObj)
+    .then(resp => resp.json())
+    .then(json => {
+      console.log(json);
+      if (json.id == undefined) {
+        console.log("undef");
+        renderLogIn();
+      } else {
+        PLAYER = {
+          id: json.id,
+          username: json.username,
+          highest_score: json.highest_score,
+          total_score: json.total_score
+        };
+        fetchPlayers();
+        console.log(PLAYER);
+        renderUser(PLAYER.id);
+      }
+    });
+}
+
+function renderUser(id) {
+  console.log("render user info");
+  fetch(`http://localhost:3000/players/${id}`)
+    .then(resp => resp.json())
+    .then(json => {
+      const div = document.querySelector('div[class="userDiv"]');
+
+      if (!div) {
+        const userDiv = create("div");
+        userDiv.className = "userDiv";
+
+        const main = el("main");
+        userDiv.innerHTML = `
+          <h2>Your Info:</h2>
+          <ul>
+          <li>username: ${json.username}</li>
+          <li>email: ${json.email}</li>
+          <li id="highScore">highest score: ${json.highest_score}</li>
+          <li id="totalScore">total score: ${json.total_score}</li>
+          </ul>`;
+
+        main.appendChild(userDiv);
+      } else {
+        let highScoreLi = el("highScore");
+        console.log(highScoreLi);
+        let totalScoreLi = el("totalScore");
+
+        highScoreLi.innerText = `highest score: ${json.highest_score}`;
+        totalScoreLi.innerText = `total score: ${json.total_score}`;
+      }
+    });
+}
+
+function create(element) {
+  return document.createElement(element);
+}
+
+function el(id) {
+  return document.getElementById(id);
+}
+
+function fetchPlayer() {
+  fetch(`${PLAYERS_URL}/${PLAYER.id}`)
+    .then(resp => resp.json())
+    .then(json => drawPlayer(json));
+}
+
+function getPlayer(player) {
   return player;
 }
 
-function drawPlayer(player){
+function drawPlayer(player) {
   // console.log(player)
-  const main = el('main');
-  const infoDiv = el('info');
-  const h1 = create('h1');
-  h1.id = 'player';
+  const main = el("main");
+  const infoDiv = el("info");
+  const h1 = create("h1");
+  h1.id = "player";
   h1.innerText = `Player: ${player.username}`;
   infoDiv.appendChild(h1);
   main.appendChild(infoDiv);
   return h1;
 }
 
-function drawInfo(){
-  const infoDiv = el('info');
+function drawInfo() {
+  const infoDiv = el("info");
   infoDiv.innerHTML = "";
-  const h2 = create('h2');
-  h2.id = 'score';
+  const h2 = create("h2");
+  h2.id = "score";
   h2.innerText = `Score: ${SCORE}`;
-  const h3 = create('h3');
-  h3.id = 'lives';
+  const h3 = create("h3");
+  h3.id = "lives";
   h3.innerText = `Lives: ${LIVES}`;
   infoDiv.appendChild(h2);
   infoDiv.appendChild(h3);
   fetchPlayer();
 }
 
-function updateInfo(){
-  currentScore = el('score');
-  currentScore.innerText = `Score: ${SCORE}`;  
-  currentLives = el('lives');
+function updateInfo() {
+  currentScore = el("score");
+  currentScore.innerText = `Score: ${SCORE}`;
+  currentLives = el("lives");
   currentLives.innerText = `Lives: ${LIVES}`;
 }
 /*           GAME          */
-
 
 class Ball {
   constructor(game) {
@@ -466,11 +445,10 @@ class Ball {
 
     // floor
     if (this.position.y + this.radius > this.gameHeight) {
-      // this.game.lives--;
-      if (LIVES > 0){
+      if (LIVES > 0) {
         LIVES -= 1;
         this.reset();
-      } 
+      }
     }
 
     //paddle
@@ -675,7 +653,7 @@ function play(timestamp) {
   let deltaTime = timestamp - prevTime;
   prevTime = timestamp;
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-  if(LIVES > 0) {
+  if (LIVES > 0) {
     updateInfo();
     game.update(deltaTime);
     game.draw(ctx);
