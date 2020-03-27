@@ -344,13 +344,16 @@ function renderUser(id) {
           userDiv.innerHTML = `
           <h2>Your Info:</h2>
           <ul>
-          <li>username: ${json.username}</li>
+          <li id="username-li">username: ${json.username}</li><button id="edit-button">Edit</button>
           <li>email: ${json.email}</li>
           <li id="highScore">highest score: ${json.highest_score}</li>
           <li id="totalScore">total score: ${json.total_score}</li>
           </ul>`;
-
           main.appendChild(userDiv);
+          const editButton = document.querySelector('button[id="edit-button"]');
+          
+          editButton.addEventListener("click", editUsername);
+          
         } else {
           let highScoreLi = el('highScore');
           console.log(highScoreLi);
@@ -361,6 +364,68 @@ function renderUser(id) {
         }
     })
 };
+
+function editUsername() {
+  console.log("edit");
+  const form = create('form');
+  const li = el('username-li');
+
+  form.innerHTML = `
+  <input type="text" name="username"><br>
+  <input type="submit">
+  `;
+  li.appendChild(form);
+
+  const submitButton = document.querySelector('input[type="submit"]');
+  submitButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    const input = document.querySelector('input[type="text"]');
+    const newUsername = input.value;
+    fetchEditUsername(newUsername);
+  })
+}
+
+function fetchEditUsername(newUsername) {
+  console.log('save');
+
+  const body = {
+    id: PLAYER.id,
+    username: newUsername
+  };
+
+  const configObj = {
+    method: "PATCH",
+    headers: {
+      "Content-Type":"application/json",
+            "Accept":"application/json"
+    },
+    body: JSON.stringify(body)
+  }
+  fetch(`${PLAYERS_URL}/${PLAYER.id}/edit`, configObj)
+  
+  setTimeout(() => {
+    fetch(`${PLAYERS_URL}/${PLAYER.id}`)
+    .then(resp => resp.json())
+    .then(json => {
+    console.log(json)
+    deleteEditForm(json)
+    });
+
+  }, 1000);
+  
+}
+
+function deleteEditForm(json) {
+  const form = document.querySelector('form');
+  form.remove();
+
+  let usernameLi = document.querySelector('li[id="username-li"]');
+  console.log(usernameLi);
+  console.log(json.username);
+  console.log("edit!!!!!")
+  usernameLi.innerHTML = json.username;
+  
+}
 
 function create(element) {
   return document.createElement(element);
