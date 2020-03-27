@@ -428,10 +428,30 @@ function fetchEditUsername(newUsername) {
     .then(json => {
     console.log(json)
     deleteEditForm(json)
+    editDiv();
     });
-
   }, 1000);
+}
+
+function editDiv() {
+  const userDiv = document.querySelector('div[class="userDiv"]');
+  const divRemove = document.querySelector('div[class="left-right"]');
+  console.log(divRemove);
+  if(divRemove) {
+    divRemove.remove();
+  }
   
+  const div = create('div');
+  div.className = "left-right";
+  div.innerHTML = `<div class="slider">Name Updated!</div>`;
+  userDiv.appendChild(div);
+  const slider = document.querySelector('div[class="slider"]');
+  slider.style.right = -200;
+
+  setTimeout(() => slider.style.right = 0, 1000);
+  setTimeout(() => {
+    slider.style.right = -200;
+  }, 4000);
 }
 
 function deleteEditForm(json) {
