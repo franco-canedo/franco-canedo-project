@@ -28,6 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCreateAccount();
 });
 
+function resetPlayer(){
+  PLAYER = {
+    id: 0,
+    username: "",
+    highest_score: 0,
+    total_score: 0
+  }
+}
+
 function renderCreateAccount() {
     const formDiv = el('form');
     formDiv.innerHTML = "";
