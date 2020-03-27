@@ -20,7 +20,7 @@ const GAME_HEIGHT = 600;
 let SCORE = 0;
 let LIVES = 5;
 
-const logIn = el('log_in');
+let logIn = el('log_in');
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM Loaded");
@@ -29,17 +29,23 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function resetPlayer(){
+  console.log('RESET');
   PLAYER = {
     id: 0,
     username: "",
     highest_score: 0,
     total_score: 0
   }
-  renderLogIn('click');
+  renderCreateAccount();
 }
 
 function renderCreateAccount() {
-    const formDiv = el('form');
+    const main = el('main');
+    main.innerHTML = `<p class="midWords">Search</p>
+    <div id="form" class="form"></div>`;
+    let formDiv = el('form');
+
+  
     formDiv.innerHTML = "";
     const h1 = create('h1');
     h1.innerText = "Create Account";
@@ -72,7 +78,6 @@ function renderCreateAccount() {
 
 function renderLogIn(event) {
     
-
     const formDiv = el('form');
     formDiv.innerHTML = "";
     const h1 = create('h1');
@@ -144,7 +149,10 @@ function LeaderBoardHTML(players) {
     }
     leaderboardDiv.appendChild(ul);
 
-    
+    const logOut = el('log_in');
+    logOut.innerText = "log out";
+    logOut.addEventListener("click", resetPlayer);
+
     mainDIv.appendChild(leaderboardDiv);
     const play = create('button');
     play.innerText = 'Play';
