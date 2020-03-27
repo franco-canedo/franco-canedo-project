@@ -311,8 +311,9 @@ function log_in(username) {
     .then(resp => resp.json())
     .then(json => {
 
-        // console.log(json);
-        if(json.status == 500) {
+        console.log(json);
+        if(json.id == undefined) {
+          console.log('undef');
           renderLogIn();
         } else {
           PLAYER = {
